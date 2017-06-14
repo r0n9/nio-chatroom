@@ -1,0 +1,15 @@
+package vip.fanrong.chatroom;
+
+import java.nio.charset.Charset;
+
+public class Constant {
+    public static final Charset CHARSET = Charset.forName("UTF-8");
+
+    public static final String USER_EXIST = "system message: user exist, please change a name";
+
+    public static final String USER_CONTENT_SPILIT = "#~#";
+
+    public static final String USER_HEART_BEAT = "~heart beat";
+
+
+}
