@@ -34,7 +34,10 @@ import vip.fanrong.utils.TimeCacheMap;
  * TODO 客户端请求在线用户名单
  * TODO 支持用户密码登录
  * TODO 聊天室广播和好友私信功能，共用一个ServerSocketChannel
- * TODO 聊天室广播和好友私信功能，两个ServerSocketChannel
+ * TODO 聊天室广播和好友私信功能，两个ServerSocketChannel]
+ * 
+ * @author r0n9 <fanrong330@gmail.com>
+ *
  */
 public class ChatRoomServer {
 

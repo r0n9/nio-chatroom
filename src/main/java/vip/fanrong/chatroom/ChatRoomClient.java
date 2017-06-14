@@ -16,7 +16,10 @@ import vip.fanrong.chatroom.cmd.*;
 import vip.fanrong.chatroom.crp.ClientRequest;
 import vip.fanrong.utils.JSONUtil;
 
-
+/**
+ * @author r0n9 <fanrong330@gmail.com>
+ *
+ */
 public class ChatRoomClient {
 
     private Selector selector = null;

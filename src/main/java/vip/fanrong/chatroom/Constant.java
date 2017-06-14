@@ -2,6 +2,10 @@ package vip.fanrong.chatroom;
 
 import java.nio.charset.Charset;
 
+/**
+ * @author r0n9 <fanrong330@gmail.com>
+ *
+ */
 public class Constant {
     public static final Charset CHARSET = Charset.forName("UTF-8");
 

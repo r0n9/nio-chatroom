@@ -3,7 +3,7 @@ package vip.fanrong.chatroom.cmd;
 import java.util.Date;
 
 /**
- * @author fangro01
+ * @author r0n9 <fanrong330@gmail.com>
  *
  */
 public class HeartBeat {

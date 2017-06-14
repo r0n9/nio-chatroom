@@ -4,7 +4,7 @@ import vip.fanrong.chatroom.cmd.*;
 import vip.fanrong.utils.JSONUtil;
 
 /**
- * @author fangro01
+ * @author r0n9 <fanrong330@gmail.com>
  *
  */
 public class ClientRequest {

@@ -10,6 +10,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonWriter;
 
+/**
+ * @author r0n9 <fanrong330@gmail.com>
+ *
+ */
 public class JSONUtil {
     private static final Logger LOGGER = Logger.getLogger(JSONUtil.class);
 

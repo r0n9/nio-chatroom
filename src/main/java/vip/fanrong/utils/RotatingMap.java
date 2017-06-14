@@ -32,6 +32,7 @@ import java.util.Map.Entry;
  *
  * The advantage of this design is that the expiration thread only locks the object
  * for O(1) time, meaning the object is essentially always available for gets/puts.
+ * 
  */
 public class RotatingMap<K, V> {
     //this default ensures things expire at most 50% past the expiration time

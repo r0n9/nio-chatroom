@@ -1,7 +1,7 @@
 package vip.fanrong.chatroom;
 
 /**
- * @author fangro01
+ * @author r0n9 <fanrong330@gmail.com>
  *
  */
 public class Configuration {
