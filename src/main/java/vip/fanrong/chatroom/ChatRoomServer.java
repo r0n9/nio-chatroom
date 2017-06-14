@@ -191,55 +191,22 @@ public class ChatRoomServer {
                         HeartBeat heartBeat = (HeartBeat) JSONUtil.fromJson(requestContent, HeartBeat.class);
                         timeCacheMap.put(heartBeat.getUserName(), sc);
                         break;
+                    case QUIT:
+                        Quit quit = (Quit) JSONUtil.fromJson(requestContent, Quit.class);
+                        SocketChannel socketChannel = timeCacheMap.remove(quit.getUserName());
+                        if (null != socketChannel && socketChannel.isOpen())
+                            socketChannel.close();
+                        BroadCast(selector, sc, ">>" + quit.getUserName() + "<< has left. ");
+                        break;
                     default:
                         break;
                 }
-
-                /**
-                 * String[] arrayContent = content.toString().split(Constant.USER_CONTENT_SPILIT, -1);
-                 * 
-                 * 
-                 * // 注册用户
-                 * if (arrayContent != null && arrayContent.length == 2
-                 * && ClientRequest.ClientCMD.SIGN_UP.toString().equals(arrayContent[1])) {
-                 * String name = arrayContent[0];
-                 * if (timeCacheMap.containsKey(name)) {
-                 * sc.write(Constant.CHARSET.encode(Constant.USER_EXIST));
-                 * } else {
-                 * timeCacheMap.put(name, sc);
-                 * int num = timeCacheMap.size();
-                 * String message = "Welcome >>" + name + "<< to chat room! Online numbers: " + num;
-                 * BroadCast(selector, null, message);
-                 * }
-                 * }
-                 * // 接受消息
-                 * else if (arrayContent != null && arrayContent.length == 2) {
-                 * String name = arrayContent[0];
-                 * String message = arrayContent[1];
-                 * 
-                 * if (ClientRequest.ClientCMD.QUIT.toString().equalsIgnoreCase(message)) {
-                 * SocketChannel socketChannel = timeCacheMap.remove(name);
-                 * if (null != socketChannel && socketChannel.isOpen())
-                 * socketChannel.close();
-                 * BroadCast(selector, sc, ">>" + name + "<< has left. ");
-                 * return;
-                 * }
-                 * 
-                 * if (timeCacheMap.containsKey(name) && !message.equals(Constant.USER_HEART_BEAT)) {
-                 * //不回发给发送此内容的客户端
-                 * BroadCast(selector, sc, ">>" + name + "<< Say: " + message);
-                 * }
-                 * 
-                 * timeCacheMap.put(name, sc);
-                 * }
-                 * 
-                 **/
             }
         }
     }
 
     /**
-     * 广播数据到所有的SocketChannel中
+     * 广播消息到所有的SocketChannel中
      * 
      * @param selector
      * @param except

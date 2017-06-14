@@ -12,9 +12,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import vip.fanrong.chatroom.cmd.HeartBeat;
-import vip.fanrong.chatroom.cmd.MessageBroadcastToAll;
-import vip.fanrong.chatroom.cmd.SignUp;
+import vip.fanrong.chatroom.cmd.*;
 import vip.fanrong.chatroom.crp.ClientRequest;
 import vip.fanrong.utils.JSONUtil;
 
@@ -94,8 +92,14 @@ public class ChatRoomClient {
             } else {
 
                 if (ClientRequest.ClientCMD.QUIT.toString().equalsIgnoreCase(line)) {
-                    sc.write(Constant.CHARSET
-                            .encode(name + Constant.USER_CONTENT_SPILIT + ClientRequest.ClientCMD.QUIT));
+                    Quit quit = new Quit();
+                    quit.setUserName(name);
+
+                    clientRequest.setClientCMD(ClientRequest.ClientCMD.QUIT);
+                    clientRequest.setRequestContent(JSONUtil.toString(quit, Quit.class));
+                    msg = JSONUtil.toString(clientRequest, ClientRequest.class);
+
+                    sc.write(Constant.CHARSET.encode(msg));
                     System.out.println("Client exit...");
                     System.exit(0);
                 }
@@ -110,9 +114,10 @@ public class ChatRoomClient {
                     clientRequest.setClientCMD(ClientRequest.ClientCMD.BROADCAST_ALL_MSG);
                     clientRequest.setRequestContent(JSONUtil.toString(mbta, MessageBroadcastToAll.class));
                     msg = JSONUtil.toString(clientRequest, ClientRequest.class);
-                } else {
-                    // TODO
+                } else if (line.startsWith(ClientRequest.ClientCMD.SIGN_OUT.name())) {
+
                 }
+                // TODO
             }
 
             if (msg == null) {
