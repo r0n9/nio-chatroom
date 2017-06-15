@@ -21,20 +21,17 @@ import vip.fanrong.utils.JSONUtil;
 import vip.fanrong.utils.TimeCacheMap;
 
 /**
- * 网络多客户端聊天室
+ * 网络聊天室
  * 
  * 功能1：客户端通过Java NIO连接到服务端，支持多客户端的连接。
- * 功能2：客户端初次连接时，服务端提示输入昵称，如果昵称已经有人使用，提示重新输入，如果昵称唯一，则登录成功，之后发送消息都需要按照规定格式带着昵称发送消息。
- * 功能3：客户端登录后，发送已经设置好的欢迎信息和在线人数给客户端，并广播通知其他客户端该客户端上线。
- * 功能4：服务器收到已登录客户端输入内容，转发至其他登录客户端。
- * 功能5：客户端无活动或者输入超时将会自动下线。
- * 功能6：服务端收到已登录客户端退出命令，使其下线，并广播通知其他客户端该客户端下线。
- * 功能7：服务器接受客户端心跳，超时无心跳客户端自动下线。
+ * 功能2：客户端初次连接时，可以键入HELP得到帮助
+ * 功能3：支持注册账号，登陆账号，广播消息，登出或者退出客户端等功能。
+ * 功能4：支持用户名密码验证登陆
+ * 功能5：客户端长时间无活动将会自动下线，并且会广播通知其他所有用户。
  * 
  * TODO 客户端请求在线用户名单
- * TODO 支持用户密码登录
- * TODO 聊天室广播和好友私信功能，共用一个ServerSocketChannel
- * TODO 聊天室广播和好友私信功能，两个ServerSocketChannel]
+ * TODO 增加私信功能
+ * TODO 增加好友群聊功能
  * 
  * @author r0n9 <fanrong330@gmail.com>
  *
@@ -143,7 +140,7 @@ public class ChatRoomServer {
                     content.append(Constant.CHARSET.decode(buff));
                 }
 
-                //TODO 异常退出
+                // 异常退出
                 if ("".equals(content.toString().trim())) {
                     String name = null;
                     for (String key : timeCacheMap.keySet()) {
@@ -179,7 +176,6 @@ public class ChatRoomServer {
 
 
             if (content.length() > 0) {
-                // TODO
                 ClientRequest request = (ClientRequest) JSONUtil.fromJson(content.toString(), ClientRequest.class);
 
                 ClientRequest.ClientCMD cmd = request.getClientCMD();
@@ -231,7 +227,7 @@ public class ChatRoomServer {
                         }
 
                         break;
-                    case SIGN_OUT: 
+                    case SIGN_OUT:
                         SignOut signout = (SignOut) JSONUtil.fromJson(requestContent, SignOut.class);
                         SocketChannel signoutSC = timeCacheMap.remove(signout.getUsername());
                         if (null != signoutSC && signoutSC.isOpen())
