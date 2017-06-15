@@ -33,7 +33,7 @@ public class ChatRoomClient {
     private void init() throws IOException {
         selector = Selector.open();
         //连接远程主机的IP和端口
-        sc = SocketChannel.open(new InetSocketAddress("127.0.0.1", Configuration.PORT));
+        sc = SocketChannel.open(new InetSocketAddress("ubuntu-host-01", Configuration.PORT));
         sc.configureBlocking(false);
         sc.register(selector, SelectionKey.OP_READ);
 
@@ -46,6 +46,7 @@ public class ChatRoomClient {
         Timer msgInputTimer = null;
 
         ClientRequest clientRequest = new ClientRequest();
+        Quit quit = new Quit();
 
         //在主线程中 从键盘读取数据输入到服务器端
         Scanner scan = new Scanner(System.in);
@@ -53,78 +54,114 @@ public class ChatRoomClient {
             String line = scan.nextLine();
             String msg = null;
 
-            if ("".equals(name) && !"".equals(line)) {
-                nameInputTimer.cancel();
-            }
-
-            if (msgInputTimer != null && !"".equals(name) && !"".equals(line)) {
+            if (msgInputTimer != null) {
                 msgInputTimer.cancel();
             }
 
+
+            quit.setUsername(name);
+
+            clientRequest.setClientCMD(ClientRequest.ClientCMD.QUIT);
+            clientRequest.setRequestContent(JSONUtil.toString(quit, Quit.class));
+
+
             msgInputTimer = new Timer();
-            msgInputTimer.schedule(new ClientExitTimerTask("Time over for input message. exit...",
-                    name + Constant.USER_CONTENT_SPILIT + ClientRequest.ClientCMD.QUIT), TIMEOUT_SECOND * 1000); // 注册完后5分钟内必须有活动，否则退出
+            msgInputTimer.schedule(new ClientExitTimerTask("Time over for input message. exit...", clientRequest),
+                    TIMEOUT_SECOND * 1000); // 5分钟内必须有活动，否则退出
 
+            if ("".equals(line)) //不允许发空消息
+                continue;
 
-            if ("".equals(line))
-                continue; //不允许发空消息
+            if (ClientRequest.ClientCMD.HELP.toString().equalsIgnoreCase(line)) { // HELP
+                System.out.println(Constant.USAGE_MESSAGE);
+                continue;
+            }
 
-            if ("".equals(name) && line.startsWith(ClientRequest.ClientCMD.SIGN_UP.name())) {
-
+            if ("".equals(name) && line.startsWith(ClientRequest.ClientCMD.SIGN_IN.name())) { // 登陆
                 String[] arr = line.split(" ", -1);
                 if (arr.length != 3) {
-                    System.out.println(ClientRequest.ClientCMD.SIGN_UP.name() + " invalid parameters.");
+                    System.out.println(ClientRequest.ClientCMD.SIGN_IN.name() + " invalid parameters.");
                     continue;
                 }
 
-                name = arr[1];
+                String name = arr[1];
                 String pswd = arr[2];
 
-                // 开启客户端心跳线程，每隔10秒往服务器写一次心跳
-                heartBeat = new HeartBeatThread(name);
-                new Thread(heartBeat).start();
 
-                SignUp signup = new SignUp();
-                signup.setName(name);
-                signup.setPassword(pswd);
+                SignIn signin = new SignIn();
+                signin.setUsername(name);
+                signin.setPassword(pswd);
 
-                clientRequest.setClientCMD(ClientRequest.ClientCMD.SIGN_UP);
-                clientRequest.setRequestContent(JSONUtil.toString(signup, SignUp.class));
+                clientRequest.setClientCMD(ClientRequest.ClientCMD.SIGN_IN);
+                clientRequest.setRequestContent(JSONUtil.toString(signin, SignIn.class));
                 msg = JSONUtil.toString(clientRequest, ClientRequest.class);
 
             } else {
 
-                if (ClientRequest.ClientCMD.QUIT.toString().equalsIgnoreCase(line)) {
-                    Quit quit = new Quit();
-                    quit.setUserName(name);
+                if (ClientRequest.ClientCMD.QUIT.toString().equalsIgnoreCase(line)) { // 退出客户端
 
-                    clientRequest.setClientCMD(ClientRequest.ClientCMD.QUIT);
-                    clientRequest.setRequestContent(JSONUtil.toString(quit, Quit.class));
+                    quit.setUsername(name);
                     msg = JSONUtil.toString(clientRequest, ClientRequest.class);
 
                     sc.write(Constant.CHARSET.encode(msg));
                     System.out.println("Client exit...");
                     System.exit(0);
-                }
 
-                if (line.startsWith(ClientRequest.ClientCMD.BROADCAST_ALL_MSG.name())) {
+                } else if (line.startsWith(ClientRequest.ClientCMD.SIGN_UP.name())) { // 注册账号
+
                     String[] arr = line.split(" ", -1);
+                    if (arr.length != 3) {
+                        System.out.println(ClientRequest.ClientCMD.SIGN_UP.name() + " invalid parameters.");
+                        continue;
+                    }
+
+                    String name = arr[1];
+                    String pswd = arr[2];
+
+
+                    SignUp signup = new SignUp();
+                    signup.setUsername(name);
+                    signup.setPassword(pswd);
+
+                    clientRequest.setClientCMD(ClientRequest.ClientCMD.SIGN_UP);
+                    clientRequest.setRequestContent(JSONUtil.toString(signup, SignUp.class));
+                    msg = JSONUtil.toString(clientRequest, ClientRequest.class);
+
+                } else if (line.startsWith(ClientRequest.ClientCMD.BROADCAST_ALL_MSG.name())) { // 广播消息
+
+                    if ("".equals(name)) {
+                        System.out.println("Please sign in first.");
+                        continue;
+                    }
 
                     MessageBroadcastToAll mbta = new MessageBroadcastToAll();
                     mbta.setUserName(name);
-                    mbta.setMessage(arr[1]);
+                    mbta.setMessage(line.substring(ClientRequest.ClientCMD.BROADCAST_ALL_MSG.name().length() + 1));
 
                     clientRequest.setClientCMD(ClientRequest.ClientCMD.BROADCAST_ALL_MSG);
                     clientRequest.setRequestContent(JSONUtil.toString(mbta, MessageBroadcastToAll.class));
                     msg = JSONUtil.toString(clientRequest, ClientRequest.class);
-                } else if (line.startsWith(ClientRequest.ClientCMD.SIGN_OUT.name())) {
 
+                } else if (line.startsWith(ClientRequest.ClientCMD.SIGN_IN.name())) { // 二次登录
+                    System.out.println("You have signed in as: " + name);
+                    continue;
+                } else if (ClientRequest.ClientCMD.SIGN_OUT.toString().equalsIgnoreCase(line)) { // 登出
+                    if ("".equals(name)) {
+                        System.out.println("Please sign in first.");
+                        continue;
+                    }
+                    SignOut signOut = new SignOut();
+                    signOut.setUsername(name);
+
+                    clientRequest.setClientCMD(ClientRequest.ClientCMD.SIGN_OUT);
+                    clientRequest.setRequestContent(JSONUtil.toString(signOut, SignOut.class));
+                    msg = JSONUtil.toString(clientRequest, ClientRequest.class);
                 }
-                // TODO
             }
 
             if (msg == null) {
                 System.out.println("Invalid command!");
+                System.out.println(Constant.USAGE_MESSAGE);
                 continue;
             }
 
@@ -138,9 +175,9 @@ public class ChatRoomClient {
     private class ClientExitTimerTask extends TimerTask {
 
         String msg;
-        String msgToSocketChannel;
+        ClientRequest msgToSocketChannel;
 
-        public ClientExitTimerTask(String msg, String msgToSocketChannel) {
+        public ClientExitTimerTask(String msg, ClientRequest msgToSocketChannel) {
             super();
             this.msg = msg;
             this.msgToSocketChannel = msgToSocketChannel;
@@ -152,7 +189,7 @@ public class ChatRoomClient {
 
             if (null != msgToSocketChannel) {
                 try {
-                    sc.write(Constant.CHARSET.encode(msgToSocketChannel));
+                    sc.write(Constant.CHARSET.encode(JSONUtil.toString(msgToSocketChannel, ClientRequest.class)));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -234,7 +271,16 @@ public class ChatRoomClient {
                 //若系统发送通知名字已经存在，则需要换个昵称
                 if (Constant.USER_EXIST.equals(content)) {
                     name = "";
+                } else if (content.startsWith(Constant.USER_SIGNIN)) {
+                    name = content.substring(Constant.USER_SIGNIN.length());
+
+                    // 开启客户端心跳线程，每隔10秒往服务器写一次心跳
+                    heartBeat = new HeartBeatThread(name);
+                    new Thread(heartBeat).start();
+
+                    System.out.println("*** Client: user signed in, heartbeat start: " + name);
                 }
+
                 System.out.println(content);
                 sk.interestOps(SelectionKey.OP_READ);
             }

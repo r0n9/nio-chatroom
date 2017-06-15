@@ -14,6 +14,7 @@ public class ClientRequest {
         SIGN_IN(SignIn.class), //
         SIGN_OUT(SignOut.class), //
         QUIT(Quit.class), //
+        HELP(Object.class), //
         BROADCAST_ALL_MSG(MessageBroadcastToAll.class), //
         BROADCAST_FRIENDS_MSG(MessageBroadcastToFriends.class), //
         PRIVATE_MSG(MessagePrivateToFriend.class), //
