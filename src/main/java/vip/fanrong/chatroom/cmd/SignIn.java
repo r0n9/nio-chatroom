@@ -4,7 +4,6 @@ import java.util.Date;
 
 /**
  * @author r0n9 <fanrong330@gmail.com>
- *
  */
 public class SignIn {
 
@@ -35,7 +34,6 @@ public class SignIn {
     public void setDate(Date date) {
         this.date = date;
     }
-
 
 
 }

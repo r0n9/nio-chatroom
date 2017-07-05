@@ -4,7 +4,6 @@ import vip.fanrong.utils.JSONUtil;
 
 /**
  * @author r0n9 <fanrong330@gmail.com>
- *
  */
 public class ClientResponse {
 

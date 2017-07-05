@@ -18,7 +18,6 @@ import vip.fanrong.utils.JSONUtil;
 
 /**
  * @author r0n9 <fanrong330@gmail.com>
- *
  */
 public class ChatRoomClient {
 
@@ -33,7 +32,7 @@ public class ChatRoomClient {
     private void init() throws IOException {
         selector = Selector.open();
         //连接远程主机的IP和端口
-        sc = SocketChannel.open(new InetSocketAddress("ubuntu-host-01", Configuration.PORT));
+        sc = SocketChannel.open(new InetSocketAddress("localhost", Configuration.PORT));
         sc.configureBlocking(false);
         sc.register(selector, SelectionKey.OP_READ);
 
@@ -286,7 +285,6 @@ public class ChatRoomClient {
             }
         }
     }
-
 
 
     public static void main(String[] args) throws IOException {

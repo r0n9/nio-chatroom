@@ -4,7 +4,6 @@ import java.util.Date;
 
 /**
  * @author r0n9 <fanrong330@gmail.com>
- *
  */
 public class SignOut {
     private String username;
@@ -25,7 +24,6 @@ public class SignOut {
     public void setDate(Date date) {
         this.date = date;
     }
-
 
 
 }

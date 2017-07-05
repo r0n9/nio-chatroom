@@ -4,7 +4,6 @@ import java.util.Date;
 
 /**
  * @author r0n9 <fanrong330@gmail.com>
- *
  */
 public class Quit {
     private String username;

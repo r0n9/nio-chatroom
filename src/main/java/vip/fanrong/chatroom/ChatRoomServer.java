@@ -22,19 +22,18 @@ import vip.fanrong.utils.TimeCacheMap;
 
 /**
  * 网络聊天室
- * 
+ * <p>
  * 功能1：客户端通过Java NIO连接到服务端，支持多客户端的连接。
  * 功能2：客户端初次连接时，可以键入HELP得到帮助
  * 功能3：支持注册账号，登陆账号，广播消息，登出或者退出客户端等功能。
  * 功能4：支持用户名密码验证登陆
  * 功能5：客户端长时间无活动将会自动下线，并且会广播通知其他所有用户。
- * 
+ * <p>
  * TODO 客户端请求在线用户名单
  * TODO 增加私信功能
  * TODO 增加好友群聊功能
- * 
- * @author r0n9 <fanrong330@gmail.com>
  *
+ * @author r0n9 <fanrong330@gmail.com>
  */
 public class ChatRoomServer {
 
@@ -269,7 +268,7 @@ public class ChatRoomServer {
 
     /**
      * 广播消息到所有的SocketChannel中
-     * 
+     *
      * @param selector
      * @param except
      * @param content

@@ -2,7 +2,6 @@ package vip.fanrong.chatroom.cmd;
 
 /**
  * @author r0n9 <fanrong330@gmail.com>
- *
  */
 public class MessageBroadcastToAll {
 
@@ -35,7 +34,6 @@ public class MessageBroadcastToAll {
     public void setDate(String date) {
         this.date = date;
     }
-
 
 
 }
