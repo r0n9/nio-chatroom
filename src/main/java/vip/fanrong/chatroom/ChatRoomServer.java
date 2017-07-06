@@ -184,7 +184,7 @@ public class ChatRoomServer {
                 switch (cmd) {
                     case SIGN_UP:// зЂВс
                         SignUp signUpContent = (SignUp) JSONUtil.fromJson(requestContent, SignUp.class);
-                        name = signUpContent.getUsername();
+                        name = signUpContent != null ? signUpContent.getUsername() : null;
                         password = signUpContent.getPassword();
 
                         if (userPswd.containsKey(name)) {
@@ -198,7 +198,7 @@ public class ChatRoomServer {
                     case SIGN_IN:
                         SignIn signInContent = (SignIn) JSONUtil.fromJson(requestContent, SignIn.class);
 
-                        name = signInContent.getUsername();
+                        name = signInContent != null ? signInContent.getUsername() : null;
                         password = signInContent.getPassword();
 
                         if (password != null && password.equals(userPswd.get(name))) {
@@ -228,7 +228,7 @@ public class ChatRoomServer {
                         break;
                     case SIGN_OUT:
                         SignOut signout = (SignOut) JSONUtil.fromJson(requestContent, SignOut.class);
-                        SocketChannel signoutSC = timeCacheMap.remove(signout.getUsername());
+                        SocketChannel signoutSC = timeCacheMap.remove(signout != null ? signout.getUsername() : null);
                         if (null != signoutSC && signoutSC.isOpen())
                             signoutSC.close();
                         BroadCast(selector, null, "[" + signout.getUsername() + "] has left. ");
@@ -236,7 +236,7 @@ public class ChatRoomServer {
                     case BROADCAST_ALL_MSG:
                         MessageBroadcastToAll msgAllContent =
                                 (MessageBroadcastToAll) JSONUtil.fromJson(requestContent, MessageBroadcastToAll.class);
-                        name = msgAllContent.getUserName();
+                        name = msgAllContent != null ? msgAllContent.getUserName() : null;
                         if (timeCacheMap.containsKey(name)) {
                             timeCacheMap.put(name, sc);
                             BroadCast(selector, sc, "[" + name + "] Say: " + msgAllContent.getMessage());
@@ -244,12 +244,12 @@ public class ChatRoomServer {
                         break;
                     case HEART_BEAT:
                         HeartBeat heartBeat = (HeartBeat) JSONUtil.fromJson(requestContent, HeartBeat.class);
-                        timeCacheMap.put(heartBeat.getUserName(), sc);
+                        timeCacheMap.put(heartBeat != null ? heartBeat.getUserName() : null, sc);
                         break;
                     case QUIT:
                         Quit quit = (Quit) JSONUtil.fromJson(requestContent, Quit.class);
 
-                        if ("".equals(quit.getUsername())) {
+                        if ("".equals(quit != null ? quit.getUsername() : null)) {
                             sc.close();
                             break;
                         }
